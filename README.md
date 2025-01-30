@@ -1,50 +1,58 @@
-# Welcome to your Expo app 👋
+### React Native Star Wars
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+### Responsiv Design
 
-## Get started
+Applikationen har en responsiv grid-layout som anpassar sig efter olika skärmstorlekar:
 
-1. Install dependencies
+- **Mobiltelefon (Standard)**: Visar 2 kolumner för filmer och 3 kolumner för karaktärer
+- **Vikbar Telefon (Utvikt)**: Expanderar till 3-4 kolumner för filmer medan karaktärer behåller 3 kolumner
 
-   ```bash
-   npm install
-   ```
+### Visuellt Exempel - Vikbar Telefon Layout (Utvikt) "Upp till 4 kolumner"
+![Filmgrid på Vikbar Telefon](assets/images/foldable-phone-films.jpeg)
 
-2. Start the app
+## Implementationsbeskrivning
+Jag har byggt en Star Wars-applikation med följande huvudkomponenter:
 
-   ```bash
-    npx expo start
-   ```
+1. **Filmvisning**
+   - Implementerat en responsiv grid för filmer
+   - Sorterar filmer efter releasedatum
+   - Använder FlatList för effektiv rendering
+   - Stöd för olika skärmstorlekar med dynamisk kolumnberäkning
 
-In the output, you'll find options to open the app in a
+2. **Karaktärsvisning**
+   - Visar karaktärer i en 3-kolumners grid
+   - Top-till-botten ordning enligt specifikation
+   - Parallell hämtning av karaktärsdata
+   - Animerad laddningsindikator med Star Wars-tema
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+3. **Felhantering & Laddning**
+   - Omfattande felhantering för API-anrop
+   - Användarvänliga felmeddelanden
+   - Timeout på 10 sekunder för API-anrop
+   - Möjlighet att försöka igen vid fel
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4. **State Management**
+   - Custom hooks för filmdata (useFilms)
+   - Custom hooks för karaktärsdata (useCharacters)
+   - Optimerad datahämtning
 
-## Get a fresh project
+5. **UI/UX**
+   - Star Wars-inspirerad design
+   - Mörkt tema genomgående
+   - Responsiv layout för olika enheter
+   - Animationer för bättre användarupplevelse
 
-When you're ready, run:
+### Tekniska Val
+- React Native med Expo för snabb utveckling
+- TypeScript för typsäkerhet
+- Jest för enhetstester
+- Axios för API-anrop
+- React Navigation för routing
 
-```bash
-npm run reset-project
-```
+### Prestanda
+- Optimerad rendering med FlatList
+- Effektiv bildhantering
+- Minnesvänlig implementation
+- Parallell hämtning av karaktärsdata med Promise.all
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Detta projekt demonstrerar modern React Native-utveckling med fokus på användarupplevelse, prestanda och kodkvalitet.

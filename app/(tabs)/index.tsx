@@ -1,74 +1,139 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, View, Image, Animated, Easing } from 'react-native';
+import { Header } from '../../components/Header';
+import { FilmGrid } from '../../components/FilmGrid';
+import { ErrorView } from '../../components/ErrorView';
+import { CharacterGrid } from '../../components/CharacterGrid';
+import { LoadingGrid } from '../../components/LoadingGrid';
+import { useFilms } from '../../hooks/useFilms';
+import { useCharacters } from '../../hooks/useCharacters';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// main screen component that handles the film list and character view
+// manages loading states and error handling for both views
+export default function MoviesScreen() {
+    const { films, loading: filmsLoading, error: filmsError, loadFilms } = useFilms();
+    const { 
+        selectedFilm,
+        characters,
+        loading: charactersLoading,
+        error: charactersError,
+        handleFilmSelect,
+        handleRetry,
+        clearSelectedFilm
+    } = useCharacters();
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    const spinValue = React.useRef(new Animated.Value(0)).current;
+
+    // Start or restart animation when loading state changes
+    React.useEffect(() => {
+        // Reset the animation value
+        spinValue.setValue(0);
+        
+        // Start the animation if we're loading
+        if (charactersLoading) {
+            Animated.loop(
+                Animated.timing(spinValue, {
+                    toValue: 1,
+                    duration: 2000,
+                    easing: Easing.linear,
+                    useNativeDriver: true,
+                })
+            ).start();
+        }
+    }, [charactersLoading]); // Depend on loading state
+
+    const spin = spinValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '360deg']
+    });
+
+    const handleRetryFilms = useCallback(() => {
+        loadFilms();
+    }, [loadFilms]);
+
+    const handleRetryCharacters = useCallback(() => {
+        handleRetry();
+    }, [handleRetry]);
+
+    if (filmsLoading) {
+        return (
+            <View style={styles.container}>
+                <Header />
+                <LoadingGrid />
+            </View>
+        );
+    }
+
+    if (filmsError) {
+        return (
+            <View style={styles.container}>
+                <Header />
+                <ErrorView 
+                    message={filmsError} 
+                    onRetry={handleRetryFilms} 
+                />
+            </View>
+        );
+    }
+
+    if (selectedFilm) {
+        return (
+            <View style={styles.container}>
+                <Header 
+                    showBack 
+                    onBack={clearSelectedFilm}
+                    title={selectedFilm.title}
+                />
+                <View style={styles.characterContent}>
+                    {charactersLoading ? (
+                        <View style={styles.centered}>
+                            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                                <Image
+                                    source={require('../../assets/images/Dueling_lightsabers.png')}
+                                    style={styles.loadingImage}
+                                    resizeMode="contain"
+                                />
+                            </Animated.View>
+                        </View>
+                    ) : charactersError ? (
+                        <ErrorView 
+                            message={charactersError} 
+                            onRetry={handleRetryCharacters}
+                        />
+                    ) : (
+                        <CharacterGrid characters={characters} />
+                    )}
+                </View>
+            </View>
+        );
+    }
+
+    return (
+        <View style={styles.container}>
+            <Header />
+            <FilmGrid 
+                films={films} 
+                onFilmPress={handleFilmSelect}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#1a1a1a',
+    },
+    characterContent: {
+        flex: 1,
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingImage: {
+        width: 100,
+        height: 100,
+    },
 });
