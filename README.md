@@ -1,5 +1,11 @@
 ### React Native Star Wars
 
+## Development tools
+
+🚀 This app was developed and tested using:
+- Expo Go (run with `npm start`)
+- OnePlus Open Android device for testing and development
+
 ### Responsiv Design
 
 Applikationen har en responsiv grid-layout som anpassar sig efter olika skärmstorlekar:
@@ -45,7 +51,7 @@ Jag har byggt en Star Wars-applikation med följande huvudkomponenter:
 ### Tekniska Val
 - React Native med Expo för snabb utveckling
 - TypeScript för typsäkerhet
-- Jest för enhetstester
+- Jest för enhetstester (begränsad testtäckning)
 - Axios för API-anrop
 - React Navigation för routing
 
